@@ -8,14 +8,14 @@ export default function page() {
     return (
         <div className="min-h-screen bg-sesi">
             <Navbar />
-            <div className="flex items-center justify-between h-screen w-4/5 mx-auto">
+            <div className="flex flex-col lg:flex-row items-center justify-between h-screen w-4/5 mx-auto">
                 <Image
                     src={book}
                     width={200}
                     height={200}
                     alt="book"
                     priority
-                    className="mx-auto"
+                    className="mx-auto hidden lg:flex"
                 />
                 <Soal />
             </div>

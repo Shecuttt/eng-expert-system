@@ -8,6 +8,7 @@ import Swal from "sweetalert2";
 
 export default function Navbar() {
     const [authenticated, setAuthenticated] = useState(false);
+    const [openedNav, setOpenedNav] = useState(false);
 
     const router = useRouter();
 
@@ -26,6 +27,10 @@ export default function Navbar() {
                 setAuthenticated(false);
             }
         }
+        window.addEventListener(
+            "resize",
+            () => window.innerWidth >= 960 && setOpenedNav(false)
+        );
     }, []);
 
     const handleLogout = () => {
@@ -62,7 +67,7 @@ export default function Navbar() {
 
     return (
         <div className="flex justify-center">
-            <nav className="top-10 p-3 rounded-full absolute shadow-md bg-black/5 backdrop-blur-sm flex flex-row justify-between items-center w-4/5">
+            <nav className="hidden top-10 p-3 rounded-full absolute shadow-md bg-black/5 backdrop-blur-sm lg:flex flex-row justify-between items-center w-4/5">
                 <div className="flex flex-row space-x-12">
                     <div className="flex space-x-1 text-white">
                         <svg
@@ -142,6 +147,112 @@ export default function Navbar() {
                         </>
                     )}
                 </div>
+            </nav>
+            <nav className="lg:hidden top-6 absolute z-10 rounded-lg w-5/6 shadow-sm p-4 bg-white/10 backdrop-blur-md flex flex-col">
+                <div className="flex justify-between items-center">
+                    <h1 className="text-gray-100 font-bold">Belajar Rek</h1>
+                    <button onClick={() => setOpenedNav(!openedNav)}>
+                        {openedNav ? (
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                className="h-6 w-6"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                strokeWidth={2}
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M6 18L18 6M6 6l12 12"
+                                />
+                            </svg>
+                        ) : (
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-6 w-6"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth={2}
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M4 6h16M4 12h16M4 18h16"
+                                />
+                            </svg>
+                        )}
+                    </button>
+                </div>
+                {openedNav && (
+                    <div className="p-4 mt-3 flex flex-col space-y-4">
+                        <Link
+                            href={"/"}
+                            className={
+                                pathname === "/"
+                                    ? "font-bold text-gray-100"
+                                    : "text-gray-200"
+                            }
+                        >
+                            Beranda
+                        </Link>
+                        <Link
+                            href={"/sesi"}
+                            className={
+                                pathname === "/sesi"
+                                    ? "font-bold text-gray-100"
+                                    : "text-gray-200"
+                            }
+                        >
+                            Mulai
+                        </Link>
+                        {authenticated ? (
+                            <Link
+                                href="/riwayat"
+                                className={
+                                    pathname === "/riwayat" ? "font-bold" : ""
+                                }
+                            >
+                                Riwayat
+                            </Link>
+                        ) : (
+                            <Link
+                                href={"#"}
+                                onClick={handleHistory}
+                                className={
+                                    pathname === "/riwayat" ? "font-bold" : ""
+                                }
+                            >
+                                Riwayat
+                            </Link>
+                        )}
+                        <div className="flex flex-row justify-evenly mt-4">
+                            {authenticated ? (
+                                <button
+                                    onClick={handleLogout}
+                                    className="py-2 px-4 rounded-full hover:bg-white/20"
+                                >
+                                    Logout
+                                </button>
+                            ) : (
+                                <>
+                                    <Link
+                                        href={"/login"}
+                                        className="py-2 px-4 rounded-lg bg-gray-50 text-violet-600 hover:bg-gray-200"
+                                    >
+                                        Login
+                                    </Link>
+                                    <Link
+                                        href={"/register"}
+                                        className="py-2 px-4 rounded-lg bg-violet-500 hover:bg-violet-700"
+                                    >
+                                        Register
+                                    </Link>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                )}
             </nav>
         </div>
     );

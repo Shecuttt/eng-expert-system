@@ -88,7 +88,7 @@ export default function page() {
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-utama">
-            <div className="lg:w-full inset-4 lg:inset-0 max-w-md p-8 space-y-3 bg-white/20 rounded-lg shadow-md">
+            <div className="lg:w-full w-4/5 inset-4 lg:inset-0 max-w-md p-8 space-y-3 bg-white/20 rounded-lg shadow-md">
                 <h2 className="text-2xl font-bold text-center">Login</h2>
                 <form className="space-y-5" onSubmit={handleSubmit}>
                     <div>

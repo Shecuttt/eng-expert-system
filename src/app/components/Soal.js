@@ -78,7 +78,7 @@ export default function Soal() {
     };
 
     return (
-        <div className="w-1/2 flex flex-col space-y-6">
+        <div className="lg:w-1/2 mt-32 lg:mt-0 flex flex-col space-y-6">
             {/* jika belum waktunya menunjukkan hasil, maka tampilkan pertanyaan */}
             {!showResult ? (
                 <>
