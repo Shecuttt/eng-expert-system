@@ -42,30 +42,22 @@ export default function Navbar() {
                 localStorage.removeItem("token");
                 setAuthenticated(false);
                 router.push("/");
-                window.location.reload();
+                // window.location.reload();
             }
         });
     };
 
     const handleHistory = () => {
-        {
-            authenticated ? (
-                <Link href="/history">
-                    <a className="text-white hover:text-gray-300">Riwayat</a>
-                </Link>
-            ) : (
-                Swal.fire({
-                    title: "Anda harus login terlebih dahulu",
-                    text: "Untuk melanjutkan, silahkan login terlebih dahulu.",
-                    icon: "info",
-                    confirmButtonText: "Login",
-                }).then((response) => {
-                    if (response.isConfirmed) {
-                        window.location.href = "/login";
-                    }
-                })
-            );
-        }
+        Swal.fire({
+            title: "Anda harus login terlebih dahulu",
+            text: "Untuk melanjutkan, silahkan login terlebih dahulu.",
+            icon: "info",
+            confirmButtonText: "Login",
+        }).then((response) => {
+            if (response.isConfirmed) {
+                window.location.href = "/login";
+            }
+        });
     };
 
     return (
@@ -104,15 +96,25 @@ export default function Navbar() {
                         >
                             Mulai
                         </Link>
-                        <Link
-                            href={"/riwayat"}
-                            onClick={handleHistory}
-                            className={
-                                pathname === "/riwayat" ? "font-bold" : ""
-                            }
-                        >
-                            Riwayat
-                        </Link>
+                        {authenticated ? (
+                            <Link
+                                href="/riwayat"
+                                className={
+                                    pathname === "/riwayat" ? "font-bold" : ""
+                                }
+                            >
+                                Riwayat
+                            </Link>
+                        ) : (
+                            <button
+                                onClick={handleHistory}
+                                className={
+                                    pathname === "/riwayat" ? "font-bold" : ""
+                                }
+                            >
+                                Riwayat
+                            </button>
+                        )}
                     </div>
                 </div>
                 <div className="flex justify-end space-x-4">

@@ -12,6 +12,9 @@ export const metadata = {
 export default function layout({ children }) {
     return (
         <html>
+            <head>
+                <link rel="icon" href="favicon.ico" sizes="any" />
+            </head>
             <body className={`${montserrat.className} antialiased`}>
                 <main>{children}</main>
             </body>

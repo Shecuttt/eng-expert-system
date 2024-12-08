@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { soal } from "@/data/soal";
 import { solusi } from "@/data/solusi";
 import { addHistory } from "../utils/historyService";
+import Swal from "sweetalert2";
 
 export default function Soal() {
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -14,16 +15,46 @@ export default function Soal() {
         setAnswers({ ...answers, [currentIndex]: answer });
     };
 
-    // Fungsi untuk pindah ke soal berikutnya
-    const handleNext = () => {
-        if (currentIndex < soal.length - 1) {
-            setCurrentIndex(currentIndex + 1);
-        } else {
-            setShowResult(true); // Menampilkan hasil setelah semua soal selesai
+    // Tambahkan history baru ke database
+    const handleAddHistory = async () => {
+        const token = localStorage.getItem("token");
+        const recommendedSolutions = calculateSolution(); // Hitung solusi
+
+        // Format data untuk disimpan
+        const historyData = {
+            action: JSON.stringify(recommendedSolutions), // Simpan solusi yang direkomendasikan
+        };
+
+        try {
+            await addHistory(token, historyData.action);
+            // console.log("History saved successfully with solutions!");
+            Swal.fire({
+                title: "Berhasil",
+                text: "Riwayat anda telah disimpan!",
+                icon: "success",
+                timer: 3000,
+                showConfirmButton: false,
+            });
+        } catch (error) {
+            console.error("Failed to save history:", error);
         }
     };
 
-    // hitung Certainty Factor dan menampilkan solusi
+    // Fungsi untuk pindah ke soal berikutnya
+    const handleNext = async () => {
+        if (currentIndex < soal.length - 1) {
+            setCurrentIndex(currentIndex + 1);
+        } else {
+            // Cek history sudah disimpan belum
+            if (!showResult) {
+                // Simpan history ke database setelah soal terakhir
+                await handleAddHistory();
+                setShowResult(true); // Menampilkan hasil setelah semua soal selesai
+            }
+        }
+    };
+
+    // Hitung Certainty Factor dan menampilkan solusi
     const calculateSolution = () => {
         let score = 0;
 
@@ -43,60 +74,29 @@ export default function Soal() {
             recommendedSolution = [solusi[2]];
         }
 
-        return recommendedSolution;
+        return recommendedSolution.map((solution) => solution.description);
     };
-
-    const saveTestHistory = () => {
-        const history = JSON.parse(localStorage.getItem("testHistory")) || [];
-        const newHistory = {
-            date: new Date().toLocaleString(),
-            answers: answers,
-        };
-        localStorage.setItem(
-            "testHistory",
-            JSON.stringify([...history, newHistory])
-        );
-        alert("Tes selesai! Riwayat tersimpan.");
-    };
-
-    // Tambahkan history baru
-    // const handleAddHistory = async () => {
-    //     if (!newAction) return;
-
-    //     try {
-    //         const added = await addHistory(token, newAction);
-    //         setHistory((prev) => [added, ...prev]); // Update state
-    //         setNewAction(""); // Reset input
-    //     } catch (error) {
-    //         console.error(error);
-    //     }
-    // };
 
     return (
         <div className="w-1/2 flex flex-col space-y-6">
-            {!showResult && (
+            {/* jika belum waktunya menunjukkan hasil, maka tampilkan pertanyaan */}
+            {!showResult ? (
                 <>
                     <div className="bg-black/5 shadow-sm backdrop-blur-lg rounded-xl p-6">
-                        {/* soal sekarang dari jumlah soal */}
                         <p className="text-xs text-white mb-3">
                             Soal {currentIndex + 1} dari {soal.length}
                         </p>
-
-                        {/* teks soal */}
                         <p className="text-white font-medium text-lg">
                             {soal[currentIndex].description}
                         </p>
                     </div>
 
-                    {/* opsi jawaban */}
                     <div className="bg-black/5 shadow-sm backdrop-blur-lg rounded-xl p-4 flex flex-col">
                         <button
                             className="p-2 text-white hover:bg-white/10 rounded-lg"
                             onClick={() => {
                                 handleAnswer("Ya");
                                 handleNext();
-                                if (currentIndex === soal.length)
-                                    saveTestHistory();
                             }}
                         >
                             Ya
@@ -106,8 +106,6 @@ export default function Soal() {
                             onClick={() => {
                                 handleAnswer("Mungkin");
                                 handleNext();
-                                if (currentIndex === soal.length)
-                                    saveTestHistory();
                             }}
                         >
                             Mungkin
@@ -123,19 +121,16 @@ export default function Soal() {
                         </button>
                     </div>
                 </>
-            )}
-
-            {/* hasil atau solusi */}
-            {showResult && (
+            ) : (
                 <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 text-center">
                     <h2 className="text-2xl text-gray-100">Hasil Diagnosis</h2>
                     <div className="p-4">
                         <h3 className="text-xl font-semibold">
                             Solusi yang Disarankan
                         </h3>
-                        <ul className="mt-3 text-white space-y-2">
+                        <ul className="mt-3 text-white space-y-2 text-left">
                             {calculateSolution().map((solution, index) => (
-                                <li key={index}>{solution.description}</li>
+                                <li key={index}>{solution}</li>
                             ))}
                         </ul>
                     </div>
