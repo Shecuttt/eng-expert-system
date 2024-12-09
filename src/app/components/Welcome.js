@@ -5,13 +5,14 @@ import Image from "next/image";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
 import { decode } from "jsonwebtoken";
+import Cookies from "js-cookie";
 
 export default function Welcome() {
     const [authenticated, setAuthenticated] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
+        const token = Cookies.get("token");
         if (token) {
             try {
                 if (decode(token)) {
@@ -44,13 +45,14 @@ export default function Welcome() {
         }
     };
     return (
-        <div className="w-4/5 lg:w-1/3 mt-20 lg:mt-32 bg-white/10 backdrop-blur-md rounded-2xl flex flex-col justify-center space-y-3 p-6">
+        <div className="w-4/5 lg:w-3/5 mt-20 lg:mt-32 bg-white/10 backdrop-blur-md rounded-2xl flex flex-col justify-center space-y-3 p-6">
             <Image
                 src={book}
                 width={180}
                 height={180}
                 alt="book"
                 className="mx-auto mb-8"
+                priority
             />
             <h1 className="text-3xl lg:text-5xl font-extrabold text-center">
                 Belajar <span className="text-violet-700">Rek!</span>

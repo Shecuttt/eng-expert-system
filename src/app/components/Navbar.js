@@ -15,7 +15,13 @@ export default function Navbar() {
     const pathname = usePathname();
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
+        const getCookieValue = (name) => {
+            const cookies = document.cookie.split("; ");
+            const cookie = cookies.find((c) => c.startsWith(`${name}=`));
+            return cookie ? cookie.split("=")[1] : null;
+        };
+
+        const token = getCookieValue("token"); // Ambil token dari cookie
         if (token) {
             try {
                 const decoded = decode(token);
@@ -23,14 +29,22 @@ export default function Navbar() {
                     setAuthenticated(true);
                 }
             } catch (error) {
-                console.error(error);
+                console.error("Invalid token:", error);
                 setAuthenticated(false);
             }
         }
+
         window.addEventListener(
             "resize",
             () => window.innerWidth >= 960 && setOpenedNav(false)
         );
+
+        return () => {
+            window.removeEventListener(
+                "resize",
+                () => window.innerWidth >= 960 && setOpenedNav(false)
+            );
+        };
     }, []);
 
     const handleLogout = () => {
@@ -44,10 +58,10 @@ export default function Navbar() {
             confirmButtonText: "Keluar",
         }).then((response) => {
             if (response.isConfirmed) {
-                localStorage.removeItem("token");
+                document.cookie =
+                    "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;"; //buat token expired secara paksa ke tanggal tersebut
                 setAuthenticated(false);
                 router.push("/");
-                // window.location.reload();
             }
         });
     };

@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { z } from "zod";
 import { loginSchema } from "../schema/schema";
 import Swal from "sweetalert2";
+import Cookies from "js-cookie";
 
 export default function page() {
     const [loading, setLoading] = useState(false);
@@ -22,6 +23,7 @@ export default function page() {
         e.preventDefault();
         setError("");
         setLoading(true);
+
         try {
             loginSchema.parse(formData);
             const res = await fetch("/api/auth/login", {
@@ -36,13 +38,15 @@ export default function page() {
                 throw new Error(data.error || "Failed to login");
             }
 
-            localStorage.setItem("token", data.token); // set the token
+            // Simpan token di cookie
+            Cookies.set("token", data.token, { expires: 1, secure: true });
 
             if (data.role === "admin") {
                 router.push("/admin");
             } else {
                 router.push("/");
             }
+
             Swal.fire({
                 title: "Welcome!",
                 text: "Login sukses!",
