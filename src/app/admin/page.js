@@ -31,14 +31,14 @@ export default function page() {
     };
 
     return (
-        <div className="p-4 flex flex-col">
-            <h1 className="text-2xl mb-6">Dashboard</h1>
+        <div className="p-2 lg:p-8 flex flex-col">
+            <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
             <div className="flex justify-between items-center space-x-4">
-                <div className="p-4 bg-slate-800/50 rounded-lg flex-1">
+                <div className="p-4 bg-black/30 rounded-lg flex-1">
                     <h2 className="mb-3 text-lg">Total Users</h2>
                     <p className="text-lg font-bold">{totalUsers}</p>
                 </div>
-                <div className="p-4 bg-slate-800/50 rounded-lg flex-1">
+                <div className="p-4 bg-black/30 rounded-lg flex-1">
                     <h2 className="mb-3 text-lg">Total History</h2>
                     <p className="text-lg font-bold">{totalHistory}</p>
                 </div>

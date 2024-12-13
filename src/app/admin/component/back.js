@@ -6,7 +6,6 @@ export default function Back() {
     const router = useRouter();
 
     const handleBack = () => {
-        localStorage.removeItem("token");
         router.push("/");
     };
     return (

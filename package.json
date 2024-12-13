@@ -12,6 +12,7 @@
     "@prisma/client": "^5.22.0",
     "bcrypt": "^5.1.1",
     "dayjs": "^1.11.13",
+    "framer-motion": "^11.14.1",
     "jose": "^5.9.6",
     "js-cookie": "^3.0.5",
     "jsonwebtoken": "^9.0.2",

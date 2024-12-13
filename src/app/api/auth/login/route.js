@@ -10,7 +10,12 @@ export async function POST(req) {
     try {
         const { email, password } = await req.json();
 
-        if (!email || !password) {
+        if (
+            !email ||
+            !password ||
+            email === undefined ||
+            password === undefined
+        ) {
             return new Response(
                 JSON.stringify({
                     error: "Email and Password must be provided",
@@ -23,9 +28,14 @@ export async function POST(req) {
 
         const user = await prisma.user.findUnique({ where: { email } });
         if (!user) {
-            return new Response(JSON.stringify({ error: "User not found" }), {
-                status: 404,
-            });
+            return new Response(
+                JSON.stringify({
+                    error: "User not found, please register first",
+                }),
+                {
+                    status: 404,
+                }
+            );
         }
 
         const isValidPassword = await bcrypt.compare(password, user.password);
@@ -36,10 +46,15 @@ export async function POST(req) {
         }
 
         const token = jwt.sign(
-            { id: user.id, email: user.email, role: user.role },
+            {
+                id: user.id,
+                email: user.email,
+                role: user.role,
+                name: user.name,
+            },
             JWT_SECRET,
             {
-                expiresIn: "1d",
+                expiresIn: "1h",
             }
         );
         return new Response(

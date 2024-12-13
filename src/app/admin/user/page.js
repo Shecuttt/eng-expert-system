@@ -73,11 +73,11 @@ export default function page() {
     };
 
     return (
-        <div className="p-8 flex flex-col space-y-6">
-            <h1 className="text-2xl">Users</h1>
+        <div className="p-2 lg:p-8 flex flex-col space-y-6">
+            <h1 className="text-2xl font-bold">Users</h1>
             <div className="flex justify-end">
                 <button
-                    className="py-2 px-4 bg-gray-700 rounded-md"
+                    className="py-2 px-4 bg-gray-200 hover:bg-gray-300 rounded-md"
                     onClick={() => setModalOpen(true)}
                 >
                     Add
@@ -85,7 +85,7 @@ export default function page() {
             </div>
             {data.length > 0 ? (
                 <table className="mt-4">
-                    <thead className="bg-gray-800">
+                    <thead className="bg-gray-200">
                         <tr>
                             <th className="py-2 px-3">ID</th>
                             <th className="text-left py-2 px-3">Name</th>
@@ -98,7 +98,7 @@ export default function page() {
                         {data.map((user) => (
                             <tr
                                 key={user.id}
-                                className="capitalize odd:bg-inherite even:bg-gray-900"
+                                className="capitalize odd:bg-inherite even:bg-black/10"
                             >
                                 <td className="py-2 px-3 text-center">
                                     {user.id}

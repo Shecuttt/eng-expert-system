@@ -5,28 +5,27 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { decode } from "jsonwebtoken";
 import Swal from "sweetalert2";
+import Cookies from "js-cookie";
 
 export default function Navbar() {
     const [authenticated, setAuthenticated] = useState(false);
     const [openedNav, setOpenedNav] = useState(false);
+    const [username, setUsername] = useState("");
+    const [showLogoutButton, setShowLogoutButton] = useState(false);
 
     const router = useRouter();
 
     const pathname = usePathname();
 
     useEffect(() => {
-        const getCookieValue = (name) => {
-            const cookies = document.cookie.split("; ");
-            const cookie = cookies.find((c) => c.startsWith(`${name}=`));
-            return cookie ? cookie.split("=")[1] : null;
-        };
-
-        const token = getCookieValue("token"); // Ambil token dari cookie
+        const token = Cookies.get("token"); // Ambil token dari cookie menggunakan js-cookie
         if (token) {
             try {
                 const decoded = decode(token);
                 if (decoded) {
                     setAuthenticated(true);
+                    // console.log(JSON.stringify(decoded));
+                    setUsername(decoded.name || "Pengguna"); // Ambil nama dari payload token
                 }
             } catch (error) {
                 console.error("Invalid token:", error);
@@ -58,9 +57,9 @@ export default function Navbar() {
             confirmButtonText: "Keluar",
         }).then((response) => {
             if (response.isConfirmed) {
-                document.cookie =
-                    "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;"; //buat token expired secara paksa ke tanggal tersebut
+                Cookies.remove("token");
                 setAuthenticated(false);
+                setUsername("");
                 router.push("/");
             }
         });
@@ -81,7 +80,7 @@ export default function Navbar() {
 
     return (
         <div className="flex justify-center">
-            <nav className="hidden top-10 p-3 rounded-full absolute shadow-md bg-black/5 backdrop-blur-sm lg:flex flex-row justify-between items-center w-4/5">
+            <nav className="hidden top-10 p-3 rounded-full absolute shadow-md bg-white/5 backdrop-blur-md outline outline-white/10 lg:flex flex-row justify-between items-center w-4/5">
                 <div className="flex flex-row space-x-12">
                     <div className="flex space-x-1 text-white">
                         <svg
@@ -136,14 +135,41 @@ export default function Navbar() {
                         )}
                     </div>
                 </div>
-                <div className="flex justify-end space-x-4">
+                <div className="flex items-center justify-end space-x-4">
                     {authenticated ? (
-                        <button
-                            onClick={handleLogout}
-                            className="py-2 px-4 rounded-full hover:bg-white/20"
-                        >
-                            Logout
-                        </button>
+                        <div className="flex items-center">
+                            <p className="mr-2">
+                                Hai,{" "}
+                                <span className="font-semibold capitalize">
+                                    {username}
+                                </span>
+                            </p>
+                            <div className="flex flex-col justify-center items-center">
+                                <button
+                                    onClick={() =>
+                                        setShowLogoutButton(!showLogoutButton)
+                                    }
+                                    className="p-3 rounded-full bg-white/20"
+                                >
+                                    <svg
+                                        className="w-4 h-4 fill-white"
+                                        viewBox="0 0 20 20"
+                                    >
+                                        <path d="M12.075,10.812c1.358-0.853,2.242-2.507,2.242-4.037c0-2.181-1.795-4.618-4.198-4.618S5.921,4.594,5.921,6.775c0,1.53,0.884,3.185,2.242,4.037c-3.222,0.865-5.6,3.807-5.6,7.298c0,0.23,0.189,0.42,0.42,0.42h14.273c0.23,0,0.42-0.189,0.42-0.42C17.676,14.619,15.297,11.677,12.075,10.812 M6.761,6.775c0-2.162,1.773-3.778,3.358-3.778s3.359,1.616,3.359,3.778c0,2.162-1.774,3.778-3.359,3.778S6.761,8.937,6.761,6.775 M3.415,17.69c0.218-3.51,3.142-6.297,6.704-6.297c3.562,0,6.486,2.787,6.705,6.297H3.415z"></path>
+                                    </svg>
+                                </button>
+                                {showLogoutButton && (
+                                    <div className="absolute -z-10 bg-white text-black mt-24 px-4 py-2 rounded-md">
+                                        <button
+                                            onClick={handleLogout}
+                                            className="py-2 px-4 hover:bg-gray-200 rounded"
+                                        >
+                                            Logout
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     ) : (
                         <>
                             <Link
@@ -162,7 +188,7 @@ export default function Navbar() {
                     )}
                 </div>
             </nav>
-            <nav className="lg:hidden top-6 absolute z-10 rounded-lg w-5/6 shadow-sm p-4 bg-white/10 backdrop-blur-md flex flex-col">
+            <nav className="lg:hidden top-6 absolute z-10 rounded-lg w-5/6 shadow-sm p-4 bg-white/10 backdrop-blur-md flex flex-col outline outline-white/10">
                 <div className="flex justify-between items-center">
                     <h1 className="text-gray-100 font-bold">Belajar Rek</h1>
                     <button onClick={() => setOpenedNav(!openedNav)}>
@@ -246,7 +272,10 @@ export default function Navbar() {
                                     onClick={handleLogout}
                                     className="py-2 px-4 rounded-full hover:bg-white/20"
                                 >
-                                    Logout
+                                    Logout as{" "}
+                                    <span className="capitalize font-bold">
+                                        {username}
+                                    </span>
                                 </button>
                             ) : (
                                 <>

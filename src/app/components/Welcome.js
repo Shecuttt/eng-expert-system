@@ -9,6 +9,7 @@ import Cookies from "js-cookie";
 
 export default function Welcome() {
     const [authenticated, setAuthenticated] = useState(false);
+    const [username, setUsername] = useState("");
     const router = useRouter();
 
     useEffect(() => {
@@ -17,6 +18,7 @@ export default function Welcome() {
             try {
                 if (decode(token)) {
                     setAuthenticated(true);
+                    setUsername(decode(token).name || "MF");
                 }
             } catch (error) {
                 console.error(error);
@@ -32,9 +34,10 @@ export default function Welcome() {
             Swal.fire({
                 title: "Ngga login dulu?",
                 icon: "question",
-                showCancelButton: true,
+                showDenyButton: true,
+                denyButtonColor: "#9c9c9c",
                 confirmButtonText: "Login dong!",
-                cancelButtonText: "Ga, malas!",
+                denyButtonText: "Langsung aja",
             }).then((response) => {
                 if (response.isConfirmed) {
                     router.push("/login");
@@ -45,7 +48,7 @@ export default function Welcome() {
         }
     };
     return (
-        <div className="w-4/5 lg:w-3/5 mt-20 lg:mt-32 bg-white/10 backdrop-blur-md rounded-2xl flex flex-col justify-center space-y-3 p-6">
+        <div className="w-4/5 lg:w-3/5 mt-20 lg:mt-32 bg-white/10 backdrop-blur-md outline outline-white/10 rounded-2xl flex flex-col justify-center space-y-3 p-6">
             <Image
                 src={book}
                 width={180}
@@ -54,9 +57,18 @@ export default function Welcome() {
                 className="mx-auto mb-8"
                 priority
             />
-            <h1 className="text-3xl lg:text-5xl font-extrabold text-center">
-                Belajar <span className="text-violet-700">Rek!</span>
-            </h1>
+            {authenticated ? (
+                <h1 className="text-3xl lg:text-5xl font-extrabold text-center">
+                    Halo,{" "}
+                    <span className="text-violet-700 capitalize">
+                        {username}
+                    </span>
+                </h1>
+            ) : (
+                <h1 className="text-3xl lg:text-5xl font-extrabold text-center">
+                    Belajar <span className="text-violet-700">Rek!</span>
+                </h1>
+            )}
             <p className="text-sm lg:text-base text-center">
                 Cari rekomendasi cara belajar Bahasa Inggris dari permasalahan
                 dalam belajarmu
@@ -66,7 +78,7 @@ export default function Welcome() {
                 onClick={handleClick}
                 className="bg-violet-600 hover:bg-violet-700 py-3 px-6 text-white rounded-full mx-auto text-sm lg:text-base"
             >
-                Cari tahu sekarang!
+                Mulai sekarang!
             </button>
         </div>
     );
