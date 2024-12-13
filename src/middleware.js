@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { jwtVerify } from "jose";
+import Cookies from "js-cookie";
 
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 
@@ -9,8 +10,8 @@ export async function middleware(req) {
         return NextResponse.next(); // Lewati permintaan selain HTML
     }
 
-    const tokenObj = req.cookies.get("token");
-    const token = tokenObj?.value;
+    // Gunakan js-cookie untuk mendapatkan token
+    const token = Cookies.get("token");
 
     console.log("Token received:", token);
 
@@ -40,3 +41,17 @@ export async function middleware(req) {
 export const config = {
     matcher: ["/admin/:path*"],
 };
+
+// Fungsi untuk menghapus token saat browser ditutup
+function setupTokenRemoval() {
+    if (typeof window !== "undefined") {
+        window.addEventListener("beforeunload", () => {
+            Cookies.remove("token");
+        });
+    }
+}
+
+// Panggil fungsi setupTokenRemoval saat aplikasi dimuat
+if (typeof window !== "undefined") {
+    setupTokenRemoval();
+}

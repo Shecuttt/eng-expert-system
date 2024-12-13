@@ -46,6 +46,13 @@ export default function Navbar() {
         };
     }, []);
 
+    //hapus token ketika halaman ditutup walaupun belum logout
+    if (typeof window !== "undefined") {
+        window.addEventListener("beforeunload", () => {
+            Cookies.remove("token");
+        });
+    }
+
     const handleLogout = () => {
         Swal.fire({
             title: "Keluar?",
